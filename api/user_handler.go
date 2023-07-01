@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/cblokkeel/hotel-reservation/db"
-	"github.com/cblokkeel/hotel-reservation/types"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -30,10 +29,11 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-func HandleGetUsers(c *fiber.Ctx) error {
-	user := types.User{
-		FirstName: "James",
-		LastName:  "Foo",
+func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
+	ctx := context.Background()
+	users, err := h.userStore.GetAllUsers(ctx)
+	if err != nil {
+		return err
 	}
-	return c.JSON(user)
+	return c.JSON(users)
 }
