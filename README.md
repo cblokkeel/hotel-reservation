@@ -3,10 +3,7 @@
 ## Resources
 ### Fiber
 
-Documentation
-```
-https://gofiber.io
-```
+[Documentation](https://gofiber.io)
 
 Installing
 ```
@@ -15,10 +12,7 @@ go get github.com/gofiber/fiber/v2
 
 ### Mongodb driver
 
-Documentation
-```
-https://mongodb.com/docs/drivers/go/current/quick-start
-```
+[Documentation](https://mongodb.com/docs/drivers/go/current/quick-start)
 
 Installing
 ```
