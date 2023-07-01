@@ -1,5 +1,13 @@
 # Hotel reservation API
 
+## Project outline
+- Users -> book room from an Hotel
+- Admins -> going to check reservation/bookings
+- Authentication and authorization -> JWT Tokens
+- Hotels -> CRUD API -> JSON
+- Rooms -> CRUD API -> JSON
+- Scripts -> db management -> seeding, migration
+
 ## Resources
 ### Fiber
 
