@@ -20,6 +20,11 @@ var config = fiber.Config{
 	},
 }
 
+const (
+	userRoute string = "/user"
+	idParam   string = "/:id"
+)
+
 func main() {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(DBURI))
 	if err != nil {
@@ -34,8 +39,9 @@ func main() {
 	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
 
-	apiv1.Get("/user", userHandler.HandleGetUsers)
-	apiv1.Get("/user/:id", userHandler.HandleGetUser)
+	apiv1.Get(userRoute, userHandler.HandleGetUsers)
+	apiv1.Post(userRoute, userHandler.HandleInsertUser)
+	apiv1.Get(userRoute+idParam, userHandler.HandleGetUser)
 
 	app.Listen(*listenAddr)
 }

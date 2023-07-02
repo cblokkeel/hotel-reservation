@@ -13,7 +13,8 @@ const userCollName = "users"
 
 type UserStore interface {
 	GetUserByID(context.Context, string) (*types.User, error)
-	GetAllUsers(context.Context) ([]types.User, error)
+	GetUsers(context.Context) ([]*types.User, error)
+	InsertUser(context.Context, *types.User) (*types.User, error)
 }
 
 type MongoUserStore struct {
@@ -40,14 +41,23 @@ func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.Use
 	return &user, nil
 }
 
-func (s *MongoUserStore) GetAllUsers(ctx context.Context) ([]types.User, error) {
+func (s *MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, error) {
 	cursor, err := s.coll.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
-	var users []types.User
+	var users []*types.User
 	if err := cursor.All(ctx, &users); err != nil {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*types.User, error) {
+	insertedID, err := s.coll.InsertOne(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	user.ID = insertedID.InsertedID.(primitive.ObjectID)
+	return user, nil
 }
