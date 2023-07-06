@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/cblokkeel/hotel-reservation/api"
+	"github.com/cblokkeel/hotel-reservation/constants"
 	"github.com/cblokkeel/hotel-reservation/db"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,11 +21,6 @@ var config = fiber.Config{
 	},
 }
 
-const (
-	userRoute string = "/user"
-	idParam   string = "/:id"
-)
-
 func main() {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(DBURI))
 	if err != nil {
@@ -37,11 +33,13 @@ func main() {
 	flag.Parse()
 
 	app := fiber.New(config)
-	apiv1 := app.Group("/api/v1")
+	apiv1 := app.Group(constants.ApiV1Route)
 
-	apiv1.Get(userRoute, userHandler.HandleGetUsers)
-	apiv1.Post(userRoute, userHandler.HandleInsertUser)
-	apiv1.Get(userRoute+idParam, userHandler.HandleGetUser)
+	apiv1.Get(constants.UserRoute, userHandler.HandleGetUsers)
+	apiv1.Post(constants.UserRoute, userHandler.HandleInsertUser)
+	apiv1.Patch(constants.UserByIdRoute, userHandler.HandleUpdateUser)
+	apiv1.Delete(constants.UserByIdRoute, userHandler.HandleDeleteUser)
+	apiv1.Get(constants.UserByIdRoute, userHandler.HandleGetUser)
 
 	app.Listen(*listenAddr)
 }

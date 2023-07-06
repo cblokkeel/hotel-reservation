@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -21,6 +22,11 @@ type CreateUserParams struct {
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
+}
+
+type UpdateUserParams struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 type User struct {
@@ -60,6 +66,28 @@ func (params *CreateUserParams) Validate() error {
 	}
 	if !isEmailValid(params.Email) {
 		errorsSlice = append(errorsSlice, fmt.Errorf("unvalid email"))
+	}
+	return errors.Join(errorsSlice...)
+}
+
+func (params *UpdateUserParams) ToBSON() bson.M {
+	bsonParams := bson.M{}
+	if params.FirstName != "" {
+		bsonParams["firstName"] = params.FirstName
+	}
+	if params.LastName != "" {
+		bsonParams["lastName"] = params.LastName
+	}
+	return bsonParams
+}
+
+func (params *UpdateUserParams) Validate() error {
+	errorsSlice := []error{}
+	if params.FirstName != "" && len(params.FirstName) < minFirstNameLen {
+		errorsSlice = append(errorsSlice, fmt.Errorf("firstName should have minimal length of %d\n", minFirstNameLen))
+	}
+	if params.LastName != "" && len(params.LastName) < minLastNameLen {
+		errorsSlice = append(errorsSlice, fmt.Errorf("lastName should have minimal length of %d\n", minLastNameLen))
 	}
 	return errors.Join(errorsSlice...)
 }

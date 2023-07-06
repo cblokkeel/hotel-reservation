@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/cblokkeel/hotel-reservation/constants"
 	"github.com/cblokkeel/hotel-reservation/db"
 	"github.com/cblokkeel/hotel-reservation/types"
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +18,7 @@ func NewUserHandler(store db.UserStore) *UserHandler {
 }
 
 func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
-	id := c.Params("id")
+	id := c.Params(constants.IdParam)
 	user, err := h.userStore.GetUserByID(c.Context(), id)
 	if err != nil {
 		return err
@@ -47,4 +48,29 @@ func (h *UserHandler) HandleInsertUser(c *fiber.Ctx) error {
 		return err
 	}
 	return c.JSON(retrievedUser)
+}
+
+func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
+	id := c.Params(constants.IdParam)
+	var params types.UpdateUserParams
+	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	res, err := h.userStore.UpdateUser(c.Context(), id, params)
+	if err != nil {
+		return err
+	}
+	return c.JSON(map[string]string{"updatedId": res.Hex()})
+}
+
+func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
+	id := c.Params(constants.IdParam)
+	res, err := h.userStore.DeleteUser(c.Context(), id)
+	if err != nil {
+		return err
+	}
+	return c.JSON(map[string]int64{"deleted": res})
 }
