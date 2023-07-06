@@ -1,3 +1,4 @@
 package db
 
-const DBNAME = "hotel-reservation"
+const DbName = "hotel-reservation"
+const TestDbName = "test-hotel-reservation"

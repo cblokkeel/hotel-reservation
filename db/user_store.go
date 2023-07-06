@@ -12,7 +12,12 @@ import (
 
 const userCollName = "users"
 
+type Dropper interface {
+	Drop(context.Context) error
+}
+
 type UserStore interface {
+	Dropper
 	GetUserByID(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
@@ -25,10 +30,10 @@ type MongoUserStore struct {
 	coll   *mongo.Collection
 }
 
-func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
+func NewMongoUserStore(client *mongo.Client, dbname string) *MongoUserStore {
 	return &MongoUserStore{
 		client: client,
-		coll:   client.Database(DBNAME).Collection(userCollName),
+		coll:   client.Database(dbname).Collection(userCollName),
 	}
 }
 
@@ -91,4 +96,8 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, id string) (int64, erro
 		return 0, fmt.Errorf("Document not found")
 	}
 	return res.DeletedCount, err
+}
+
+func (s *MongoUserStore) Drop(ctx context.Context) error {
+	return s.coll.Drop(ctx)
 }

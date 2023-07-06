@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const DBURI = "mongodb://localhost:27030"
+const dburi = "mongodb://localhost:27030"
 
 var config = fiber.Config{
 	ErrorHandler: func(c *fiber.Ctx, err error) error {
@@ -22,12 +22,12 @@ var config = fiber.Config{
 }
 
 func main() {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(DBURI))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
+	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DbName))
 
 	listenAddr := flag.String("listenAddr", ":3000", "The listen address of the API server")
 	flag.Parse()
